@@ -29,7 +29,6 @@ const app = express();
 const PORT = 3000;
 
 // Configurar o motor de templates
-//app.use(bodyParser.urlencoded({ extended: false }));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.json());
@@ -60,12 +59,86 @@ app.get('/', (req, res) => {
   });
 });
 
+app.get('/password', (req, res) => {
+  res.render('layout', { 
+    title: 'Troca de Password',
+    body: 'pages/change_password',
+    error: '',
+    email: req.query.email
+  });
+});
+
+app.post('/password', (req, res) => {
+  const { email, password, password2 } = req.body;
+  
+  if (!email) {
+    res.render('layout', { 
+      title: 'Troca de Password',
+      body: 'pages/change_password',
+      error: 'o email não foi informado'
+    });
+    return;
+  }
+
+  if (!password || !password2) {
+    res.render('layout', { 
+      title: 'Troca de Password',
+      body: 'pages/change_password',
+      error: 'as senhas devem ser preenchidas'
+    });
+    return;
+  }
+
+  if (password != password2) {
+    res.render('layout', { 
+      title: 'Troca de Password',
+      body: 'pages/change_password',
+      error: 'as senhas devem ser iguais'
+    });
+    return;
+  }
+
+  bcrypt.hash(password, 10, (err, hash) => {
+    db.query('UPDATE user SET password = ? WHERE email = ?', [hash, email]);
+    res.render('layout', { 
+      title: 'Login',
+      body: 'pages/login',
+      error: 'password trocada com sucesso'
+    });
+    return;
+  });
+
+});
+
 app.get('/login', (req, res) => {
   res.render('layout', { 
     title: 'login',
     body: 'pages/login',
     error: ''
   });
+});
+
+app.get('/forgot', (req, res) => {
+  res.render('layout', { 
+    title: 'Esqueci minha senha',
+    body: 'pages/forgot',
+    error: ''
+  });
+});
+
+app.post('/forgot', (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    res.render('layout', { 
+      title: 'Esqueci minha senha',
+      body: 'pages/forgot',
+      error: 'o email é obrigatório'
+    });
+    return;
+  }
+
+  res.redirect('/');
 });
 
 app.get('/about', (req, res) => {
@@ -126,8 +199,6 @@ app.post('/login', (req, res) => {
       res.redirect('/');
     });
   });
-
-  //res.redirect('/login');
 
 })
 
