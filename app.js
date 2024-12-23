@@ -99,15 +99,35 @@ app.post('/password', (req, res) => {
   }
 
   bcrypt.hash(password, 10, (err, hash) => {
-    db.query('UPDATE user SET password = ? WHERE email = ?', [hash, email]);
-    res.render('layout', { 
-      title: 'Login',
-      body: 'pages/login',
-      error: 'password trocada com sucesso'
-    });
-    return;
-  });
 
+    db.query('UPDATE user SET password = ? WHERE email = ?', [hash, email], (err, result) => {
+      
+      if (err) {
+        res.render('layout', { 
+          title: 'Troca de Password',
+          body: 'pages/change_password',
+          error: err
+        });
+        return;
+      }
+      
+      if (result.affectedRows > 0) {
+        res.render('layout', { 
+          title: 'Login',
+          body: 'pages/login',
+          error: 'password trocada com sucesso'
+        });
+        return;
+      } else {
+        res.render('layout', { 
+          title: 'Troca de Password',
+          body: 'pages/change_password',
+          error: 'não foi possivel efetuar a alteração'
+        });
+        return;
+      }
+    });
+  });
 });
 
 app.get('/login', (req, res) => {
