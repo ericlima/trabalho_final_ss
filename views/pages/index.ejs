@@ -1,1 +1,9 @@
-Corpo da pagina
+<div>
+    Corpo da pagina
+</div>
+
+<div>
+    <% if (user && user.role == 'admin' && users) { %>
+        <%- include('users') %>
+    <% } %>
+</div>
