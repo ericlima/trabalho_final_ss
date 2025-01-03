@@ -18,5 +18,14 @@ module.exports = {
         user: req.session.user || null,
       });
     },
+
+    adminPage: (req, res) => {
+      res.render('layout', { 
+        title: 'Página de Administração', 
+        body: 'pages/admin',
+        error: '', // Caso queira mostrar alguma mensagem de erro ou status
+        user: req.session.user || null, // Dados do usuário logado
+      });
+    },
   };
   

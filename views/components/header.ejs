@@ -1,37 +1,42 @@
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title || "Minha Aplicação" %></title>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title || "Minha Aplicação" %>
+    </title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 
- <!-- Navbar -->
- <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-  <div class="container-fluid ml-5 mr-">
-      <a href="/">
-          <img src="/images/logo.png" alt="Logo" style="width: 80px; height: 40px;">
-      </a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mynavbar">
-          <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="mynavbar">
-          <ul class="navbar-nav mr-auto">
-              <li class="nav-item">
-                  <a class="nav-link" href="/about">Sobre</a>
-              </li>
-              
-          </ul>
-          <form class="form-inline">
-            <% if (user) { %>
-                <span>Bem-vindo, <%= user.email %>&nbsp;</span>
-                <a href="/logout">Logout</a>
-            <% } else { %>
-                <a href="/login">Login</a>
-            <% } %>
-              
-          </form>
-      </div>
-  </div>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <div class="container-fluid ml-5 mr-">
+        <a href="/">
+            <img src="/images/logo.png" alt="Logo" style="width: 80px; height: 40px;">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mynavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mynavbar">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/about">Sobre</a>
+                </li>
+                <% if (user && user.role && user.role == 'admin') { %>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">Admin</a>
+                    </li>
+                <% } %>
+            </ul>
+            <form class="form-inline">
+                <% if (user) { %>
+                    <span>Bem-vindo, <%= user.email %>&nbsp;</span>
+                    <a href="/logout">Logout</a>
+                    <% } else { %>
+                        <a href="/login">Login</a>
+                        <% } %>
+
+            </form>
+        </div>
+    </div>
 </nav>
