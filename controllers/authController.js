@@ -9,7 +9,8 @@ module.exports = {
       return res.render('layout', { 
         title: 'Login',
         body: 'pages/login',
-        error: 'Email e senha são obrigatórios.'
+        error: 'Email e senha são obrigatórios.',
+        user: req.session.user || null,
       });
     }
 
@@ -19,7 +20,8 @@ module.exports = {
         return res.render('layout', { 
           title: 'Login',
           body: 'pages/login',
-          error: 'Usuário não encontrado.'
+          error: 'Usuário não encontrado.',
+          user: req.session.user || null,
         });
       }
 
@@ -28,7 +30,8 @@ module.exports = {
         return res.render('layout', { 
           title: 'Login',
           body: 'pages/login',
-          error: 'Senha incorreta.'
+          error: 'Senha incorreta.',
+          user: req.session.user || null,
         });
       }
 
