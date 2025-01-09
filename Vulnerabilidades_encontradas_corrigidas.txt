@@ -1,0 +1,8 @@
+Aqui Estão as 5 vulnerabilidades que escolhemos para resolver
+
+1. CWE-89  Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')
+2. CWE-79  Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')
+3. CWE-352 Cross-Site Request Forgery (CSRF)
+4. CWE-462 Missing Authorization
+   CWE-863 Incorrect Authorization
+5. CWE-778 Insufficient Logging

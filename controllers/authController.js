@@ -6,6 +6,7 @@ module.exports = {
     const { email, password } = req.body;
 
     if (!email || !password) {
+      console.error('Email e senha são obrigatórios.');
       return res.render('layout', { 
         title: 'Login',
         body: 'pages/login',
@@ -17,16 +18,18 @@ module.exports = {
     try {
       const user = await userModel.findByEmail(email);
       if (!user) {
+        console.error('Utilizador não encontrado.');
         return res.render('layout', { 
           title: 'Login',
           body: 'pages/login',
-          error: 'Usuário não encontrado.',
+          error: 'Utilizador não encontrado.',
           user: req.session.user || null,
         });
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
+        console.error('Senha incorreta');
         return res.render('layout', { 
           title: 'Login',
           body: 'pages/login',

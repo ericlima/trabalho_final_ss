@@ -21,7 +21,7 @@ router.get('/forgot', (req, res) => {
         title: 'Esqueci minha senha', 
         body: 'pages/forgot', 
         error: '',
-        user: null,
+        user: req.session.user || null,
     });
 });
 
@@ -35,7 +35,7 @@ router.get('/password', (req, res) => {
         body: 'pages/change_password',
         error: '',
         email: req.query.email || '',
-        user: null,
+        user: req.session.user || null,
     });
 });
 
