@@ -1,9 +1,11 @@
+
+
 <div>
     <center>Corpo da pagina</center>
 </div>
 
-<div>
-    <!--% if (user && user.role == 'admin' && users) { %-->
-        <!--%- include('users') %-->
-    <!--% } %-->
+<div class="text-center mt-3">
+    <% if (error) { %>
+        <p style="color: red;"><%= error %></p>
+    <% } %>
 </div>

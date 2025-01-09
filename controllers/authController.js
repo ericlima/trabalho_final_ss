@@ -6,8 +6,7 @@ module.exports = {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      console.error('Email e senha são obrigatórios.');
-      return res.render('layout', { 
+      return res.render('layout', {
         title: 'Login',
         body: 'pages/login',
         error: 'Email e senha são obrigatórios.',
@@ -15,22 +14,31 @@ module.exports = {
       });
     }
 
+    // Validação básica de e-mail
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.render('layout', {
+        title: 'Login',
+        body: 'pages/login',
+        error: 'Email inválido.',
+        user: req.session.user || null,
+      });
+    }
+
     try {
       const user = await userModel.findByEmail(email);
       if (!user) {
-        console.error('Utilizador não encontrado.');
-        return res.render('layout', { 
+        return res.render('layout', {
           title: 'Login',
           body: 'pages/login',
-          error: 'Utilizador não encontrado.',
+          error: 'Usuário não encontrado.',
           user: req.session.user || null,
         });
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        console.error('Senha incorreta');
-        return res.render('layout', { 
+        return res.render('layout', {
           title: 'Login',
           body: 'pages/login',
           error: 'Senha incorreta.',
@@ -41,98 +49,51 @@ module.exports = {
       req.session.user = { id: user.id, email: user.email, role: user.role };
       res.redirect('/');
     } catch (error) {
-      console.error('Erro ao fazer login:', error);
+      console.error('Erro ao fazer login:', error.message);
       res.status(500).send('Erro interno.');
     }
   },
 
   logout: (req, res) => {
     req.session.destroy(() => {
-      res.redirect('/');
+      res.redirect('/login');
     });
   },
 
-  // Recuperação de senha
   forgotPassword: async (req, res) => {
     const { email } = req.body;
 
     if (!email) {
-      return res.render('layout', { 
-        title: 'Esqueci minha senha',
+      return res.render('layout', {
+        title: 'Esqueceu a Senha',
         body: 'pages/forgot',
-        error: 'O email é obrigatório.' 
+        error: 'O email é obrigatório.',
+        user: req.session.user || null,
       });
     }
 
+    // Simular envio de e-mail de recuperação
     try {
       const user = await userModel.findByEmail(email);
       if (!user) {
-        return res.render('layout', { 
-          title: 'Esqueci minha senha',
+        return res.render('layout', {
+          title: 'Esqueceu a Senha',
           body: 'pages/forgot',
-          error: 'Usuário não encontrado.' 
+          error: 'Usuário não encontrado.',
+          user: req.session.user || null,
         });
       }
 
-      // Aqui você pode enviar um email com um link de redefinição de senha
-      // Este exemplo apenas simula esse envio
-      console.log(`Simulação: Link de recuperação enviado para ${email}.`);
-
-      res.render('layout', { 
-        title: 'Esqueci minha senha',
+      console.log(`Enviando email de recuperação para ${email}`); // Simular envio de e-mail
+      res.render('layout', {
+        title: 'Esqueceu a Senha',
         body: 'pages/forgot',
-        error: 'Um link de recuperação foi enviado para o seu email.' 
+        error: 'Se o email existir, uma mensagem será enviada.',
+        user: req.session.user || null,
       });
     } catch (error) {
-      console.error('Erro ao processar recuperação de senha:', error);
-      res.status(500).send('Erro interno do servidor.');
-    }
-  },
-
-  // Troca de senha
-  changePassword: async (req, res) => {
-    const { email, password, password2 } = req.body;
-
-    if (!email || !password || !password2) {
-      return res.render('layout', { 
-        title: 'Troca de Password',
-        body: 'pages/change_password',
-        error: 'Todos os campos são obrigatórios.',
-        email: email 
-      });
-    }
-
-    if (password !== password2) {
-      return res.render('layout', { 
-        title: 'Troca de Password',
-        body: 'pages/change_password',
-        error: 'As senhas não coincidem.',
-        email: email 
-      });
-    }
-
-    try {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const result = await userModel.updatePassword(email, hashedPassword);
-
-      if (result.affectedRows === 0) {
-        return res.render('layout', { 
-          title: 'Troca de Password',
-          body: 'pages/change_password',
-          error: 'Não foi possível alterar a senha.',
-          email: email 
-        });
-      }
-
-      res.render('layout', { 
-        title: 'Login',
-        body: 'pages/login',
-        error: 'Senha alterada com sucesso. Faça login com sua nova senha.',
-        email: email 
-      });
-    } catch (error) {
-      console.error('Erro ao trocar senha:', error);
-      res.status(500).send('Erro interno do servidor.');
+      console.error('Erro ao processar recuperação de senha:', error.message);
+      res.status(500).send('Erro interno.');
     }
   },
 };

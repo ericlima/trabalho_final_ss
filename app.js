@@ -26,69 +26,93 @@ app.use(session({
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// === authController.js ===
-const bcrypt = require('bcryptjs');
-const userModel = require('../models/userModel');
+const authController = require('./controllers/authController');
 
-module.exports = {
-  login: async (req, res) => {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.render('layout', {
-        title: 'Login',
-        body: 'pages/login',
-        error: 'Email e senha são obrigatórios.',
-        user: req.session.user || null,
-      });
-    }
-
-    // Validação básica de e-mail
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      console.error('Erro ao fazer login: Email inválido.');
-      return res.render('layout', {
-        title: 'Login',
-        body: 'pages/login',
-        error: 'Credenciais inválidas.',
-        user: req.session.user || null,
-      });
-    }
-
-    try {
-      const user = await userModel.findByEmail(email);
-      if (!user) {
-        console.error('Erro ao fazer login: Utilizador não encontrado.');
-        return res.render('layout', {
-          title: 'Login',
-          body: 'pages/login',
-          error: 'Credenciais inválidas.',
-          user: req.session.user || null,
-        });
-      }
-
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        console.error('Erro ao fazer login: Senha incorreta.');
-        return res.render('layout', {
-          title: 'Login',
-          body: 'pages/login',
-          error: 'Credenciais inválidas.',
-          user: req.session.user || null,
-        });
-      }
-
-      req.session.user = { id: user.id, email: user.email, role: user.role };
-      res.redirect('/');
-    } catch (error) {
-      console.error('Erro ao fazer login:', error.message);
-      res.status(500).send('Erro interno.');
-    }
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'default_secret', // Adicionado fallback para evitar problemas
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 1000 * 60 * 60, // 1 hora
+    httpOnly: true, // Proteção contra XSS
+    secure: process.env.NODE_ENV === 'production', // Somente HTTPS em produção
   },
+}));
 
-  logout: (req, res) => {
-    req.session.destroy(() => {
-      res.redirect('/');
+// Log para verificar inicialização
+app.use((req, res, next) => {
+  console.log(`Request recebido: ${req.method} ${req.url}`);
+  next();
+});
+
+app.get('/about', (req, res) => {
+  res.render('layout', {
+    title: 'Sobre',
+    body: 'pages/about',
+    user: req.session.user || null,
+  });
+});
+
+// Rota principal
+app.get('/', (req, res) => {
+  res.render('layout', {
+    title: 'Página Inicial',
+    body: 'pages/index',
+    error: null,
+    user: req.session.user || null,
+  });
+});
+
+// Rotas de autenticação
+app.get('/login', (req, res) => {
+  res.render('layout', {
+    title: 'Login',
+    body: 'pages/login',
+    error: null,
+    user: req.session.user || null,
+  });
+});
+
+// Rota admin com verificação de role
+app.get('/admin', (req, res) => {
+  const user = req.session.user;
+  if (!user || user.role !== 'admin') {
+    return res.status(403).render('layout', {
+      title: 'Acesso Negado',
+      body: 'pages/index',
+      error: 'Você não tem permissão para acessar página administrativa.',
+      user: user || null,
     });
-  },
-};
+  }
+
+  res.render('layout', {
+    title: 'Administração',
+    body: 'pages/admin',
+    user,
+  });
+});
+
+app.post('/login', authController.login);
+
+app.get('/logout', authController.logout);
+
+app.get('/forgot', (req, res) => {
+  res.render('layout', {
+    title: 'Esqueceu a Senha',
+    body: 'pages/forgot',
+    error: null,
+    user: req.session.user || null,
+  });
+});
+
+app.post('/forgot', authController.forgotPassword);
+
+// Testar rota básica
+app.get('/health', (req, res) => {
+  res.send('Aplicação está funcionando.');
+});
+
+// Iniciar o servidor
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
+});
