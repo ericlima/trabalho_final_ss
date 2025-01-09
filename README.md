@@ -7,3 +7,7 @@ alunos:
 Eric Lima
 Alex Seles
 Gerson Muel
+
+este projeto encontra-se em:
+https://github.com/ericlima/trabalho_final_ss
+
