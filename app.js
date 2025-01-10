@@ -27,6 +27,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 const authController = require('./controllers/authController');
+const messageController = require('./controllers/messageController');
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'default_secret', // Adicionado fallback para evitar problemas
@@ -104,6 +105,8 @@ app.get('/forgot', (req, res) => {
     user: req.session.user || null,
   });
 });
+
+app.post('/message', messageController.insertMessage);
 
 app.post('/forgot', authController.forgotPassword);
 

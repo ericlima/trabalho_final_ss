@@ -4,3 +4,9 @@ CREATE TABLE user (
     password VARCHAR(255) NOT NULL,
     role ENUM('admin', 'user') NOT NULL
 );
+
+CREATE TABLE Message (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    message VARCHAR(255) NOT NULL
+);

@@ -9,3 +9,14 @@
         <p style="color: red;"><%= error %></p>
     <% } %>
 </div>
+
+<div>
+    <div>
+        Enviar Mensagem
+    </div>
+    <form action="message" method="post">
+        <input type="hidden" name="email" value="<%= user.email %>" />
+        <input type="text" nam="mensagem" />
+        <button type="submit" class="btn btn-primary btn-block">Enviar mensagem</button>
+    </form>
+</div>
